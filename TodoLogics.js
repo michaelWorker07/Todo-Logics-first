@@ -109,7 +109,14 @@ function createTask(taskText, saveTodos, isCompleted = false) {
                 text: span.textContent, 
                 completed: isChecked 
             })
-        }).then(() => ActiveCount());
+        }).then(() => 
+        ActiveCount());
+
+        const todoIndex = allTodosData.findIndex(t => t.text === span.textContent);
+        if (todoIndex !== -1) {
+            allTodosData[todoIndex].completed = isChecked;
+        }
+
         saveToLocalStorage();
     };
 
@@ -138,6 +145,8 @@ if (saveTodos && !isSaving) {
     .then(data => {
         console.log("Сохранено на сервере:", data);
         isSaving = false; 
+        
+        allTodosData.push({ text: taskText, completed: false });
     })
     .catch(err => {
         console.error("Ошибка:", err);
@@ -160,13 +169,17 @@ if (saveTodos && !isSaving) {
         body: JSON.stringify({ text: taskText }) 
     })
     .then(res => res.json())
-    .then(data => console.log("Сервер ответил:", data.message))
+    .then(data => {
+        console.log("Сервер ответил:", data.message);
+        
+        allTodosData = allTodosData.filter(todo => todo.text !== taskText);
+        
+        li.remove();
+        taskCountSpanAll.textContent = document.querySelectorAll('.listTodo').length;
+        ActiveCount();
+        saveToLocalStorage();
+    })
     .catch(err => console.error("Ошибка при удалении:", err));
-    const removedLi = li;
-    li.remove();
-    taskCountSpanAll.textContent = document.querySelectorAll('.listTodo').length;
-    ActiveCount();
-    saveToLocalStorage();
 
 // Undo?Вернуть Button + окружность с таймером 
 const UndoButton = document.createElement('button');
@@ -516,6 +529,8 @@ async function loadTasks() {
             const serverTodos = await response.json();
             console.log("Загружено с сервера:", serverTodos);
             
+            allTodosData = serverTodos;
+            
             todoList.innerHTML = '';
             
             serverTodos.forEach(todo => {
@@ -527,24 +542,23 @@ async function loadTasks() {
             
             saveToLocalStorage();
         } else {
-           
             loadFromLocalStorage();
         }
     } catch (error) {
         console.log("Сервер недоступен, загружаем из localStorage");
-        
         loadFromLocalStorage();
     }
     
     ActiveCount();
 }
-
 function loadFromLocalStorage() {
     const saved = localStorage.getItem('todos');
     if (!saved) return;
     
     const tasks = JSON.parse(saved);
     console.log("Загружено из localStorage:", tasks);
+    
+    allTodosData = tasks;
     
     todoList.innerHTML = '';
     
