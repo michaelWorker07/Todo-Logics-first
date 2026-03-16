@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark-theme');
+        }
+    </script>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="TodoLogics.css">
     <title>First Todo on Real life</title>
@@ -14,7 +19,7 @@
     <div class="Todo-container">
         <input class="fieldTodo" id="fieldTodo" placeholder="Note |">
     
-            <button class="ButtonALL" onclick="openModal()">ALL</button>
+            <button class="ButtonALL" onclick="openModal(event)">ALL</button>
 
         <div class="modal-buttons">
             <div class="button-content">
@@ -53,6 +58,9 @@
         <div class="parentTodo">
             <div class="modalWindow"><h1 class="NewNote">NEW NOTE</h1>
                 <input class="inputNew"  type="text" placeholder="Input your note...">
+                <p class="error-msg">
+                     Поле не может быть пустым!
+                 </p>
                 
             <button type="button" class="closeBtn">CANCEL</button>
             <button type="button" class="saveBtn">APPLY</button>

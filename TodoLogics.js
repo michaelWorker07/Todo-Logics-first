@@ -2,6 +2,8 @@ function changeColor(color) {
     document.body.style.backgroundColor = color;
 };
 
+loadTasks();
+
 const modal = document.querySelector('.modalWindow');
 const openModalBtn = document.querySelector('.ButtonCreate');
 const closeBtn = document.querySelector('.closeBtn');
@@ -73,7 +75,7 @@ let isSaving = false;
 // Create Todo Function.
 function createTask(taskText, saveTodos, isCompleted = false) {
     if (!taskText || taskText.trim() === "") {
-        alert('Поле не может быть пустым! Уволен!'); 
+        
         return null;
     }
 
@@ -108,6 +110,7 @@ function createTask(taskText, saveTodos, isCompleted = false) {
                 completed: isChecked 
             })
         }).then(() => ActiveCount());
+        saveToLocalStorage();
     };
 
         checkbox.addEventListener('change', function() {
@@ -163,6 +166,7 @@ if (saveTodos && !isSaving) {
     li.remove();
     taskCountSpanAll.textContent = document.querySelectorAll('.listTodo').length;
     ActiveCount();
+    saveToLocalStorage();
 
 // Undo?Вернуть Button + окружность с таймером 
 const UndoButton = document.createElement('button');
@@ -312,63 +316,125 @@ function filterTasks(type) {
             optText.style.display = 'none';
         };
     });
+     closeModal();
  }
 
-// DeleteAllTask
-    deleteAllCheckbox.classList.add('slider::before')
-    deleteAllCheckbox.addEventListener('change', function() {
-        if (this.checked) {
-            todoList.innerHTML = ''; 
-    }
+//  удаление всех тудушек через свитч инпут
+document.querySelector('.switch').addEventListener('click', (e) => {
+    e.stopPropagation(); 
 });
-    // Слайдер удаления всех туду + локал хост
-    deleteAllCheckbox.addEventListener('click', () => {
+
+
+deleteAllCheckbox.addEventListener('change', function(e) {
+    e.stopPropagation();
     const slider = document.querySelector('.slider');
-    if (todoList.children.length === 0) {
-       
-        slider.classList.add('shake');
-        setTimeout(() => slider.classList.remove('shake'), 300);
-    } else {
-        
-        fetch("http://localhost:3000/todos/clear", {
-            method: "DELETE"
-        })
-        .then(res => res.json())
-        .then(data => console.log(data.message))
-        .catch(err => console.error("Ошибка при полной очистке:", err));
-        todoList.innerHTML = '';
-        allTodosData = []; 
-        taskCountSpanAll.textContent = 0;
-        if (typeof ActiveCount === 'function') ActiveCount();
+    const hasTasks = todoList.children.length > 0;
 
-        console.log('Список полностью очищен!');
+    if (this.checked) {
+        if (!hasTasks) {
+            
+            slider.classList.add('shake');
+            setTimeout(() => {
+                slider.classList.remove('shake');
+                this.checked = false;
+            }, 300);
+        } else {
+            todoList.innerHTML = '';
+            allTodosData = []; 
+            taskCountSpanAll.textContent = 0;
+            if (typeof ActiveCount === 'function') ActiveCount();
+
+           
+            fetch("http://localhost:3000/todos/clear", { method: "DELETE" })
+                .then(res => res.json())
+                .then(data => console.log("Сервер очищен"))
+        
+                .catch(err => console.error("Ошибка сервера:", err));
+
+            setTimeout(() => {
+                this.checked = false;
+            }, 500);
+
+       saveToLocalStorage(); 
+        }
     }
 });
 
-// Modal.Window-Log.
-inputField.onkeydown = function(e) {
+// Modal.Window-Log and error input. 
+const errorMsg = document.querySelector('.error-msg');
+
+inputField.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
         e.preventDefault(); 
-        e.stopPropagation(); 
+        
         const text = this.value.trim();
-        if (text) {
+
+        if (!text) {
+            errorMsg.style.display = 'block'; 
+            this.style.border = '1px solid red';
+            return; 
+        }
+        errorMsg.style.display = 'none'; 
+        this.style.border = '1px solid #F7F7F7'; 
+        
+        modal.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = 'auto';
+
+        try {
             const li = createTask(text, true);
             if (li) {
                 todoList.appendChild(li);
-                modal.classList.remove('active');
-                overlay.classList.remove('active');
-                document.body.style.overflow = 'auto';
+                if (typeof ActiveCount === 'function') ActiveCount();
+                saveToLocalStorage();
             }
-            this.value = '';
+        } catch (err) {
+            console.error("Ошибка в createTask, но окно закрыто:", err);
         }
-        return false; 
+
+        this.value = ''; 
     }
-};
+});
+
+// Чтобы ошибка пропадала, когда пользователь начинает печатать снова
+inputField.addEventListener('input', function() {
+    errorMsg.style.display = 'none';
+    this.style.border = '1px solid #F7F7F7';
+});
+
+// Кнопка создать таску с уведомлением если поле пустое
+saveBtn.addEventListener('click', () => {
+    const text = inputField.value.trim();
+    if (!text) {
+        errorMsg.style.display = 'block'; 
+        inputField.style.border = '1px solid red'; 
+        return; 
+    }
+
+    errorMsg.style.display = 'none';
+    inputField.style.border = '1px solid #F7F7F7';
+
+    const li = createTask(text, true);
+    if (li) {
+        todoList.appendChild(li);
+        
+        modal.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = 'auto';
+        
+        inputField.value = ''; 
+
+        
+        if (typeof ActiveCount === 'function') ActiveCount();
+        saveToLocalStorage();
+    }
+});
 
 openModalBtn.addEventListener('click', () => {
     modal.classList.add('active');
     overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
+    
 });
 
 closeBtn.addEventListener('click', () => {
@@ -378,12 +444,23 @@ closeBtn.addEventListener('click', () => {
 });
 
 // Оверлей(вся страница в затемнении при нажатии на кнопку +)
-overlay.addEventListener('click', closeBtn);
+
+overlay.addEventListener('click', () => {
+    modal.classList.remove('active');
+    overlay.classList.remove('active');
+    document.body.style.overflow = 'auto'; 
+    inputField.value = ''; 
+});
 
 // Кнопки сортировки + открытие окна под ALL
 const modalDivBtn = document.querySelector('.modal-buttons');
 
-function openModal() {
+
+modalDivBtn.classList.remove('active'); 
+
+function openModal(event) {
+    
+    if (event) event.stopPropagation(); 
     modalDivBtn.classList.toggle('active');
 }
 
@@ -391,139 +468,179 @@ function closeModal() {
     modalDivBtn.classList.remove('active');
 }
 
+document.addEventListener('click', (event) => {
+
+    const isClickInside = modalDivBtn.contains(event.target);
+    
+    if (modalDivBtn.classList.contains('active') && !isClickInside) {
+        closeModal();
+    }
+});
+
+modalDivBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+});
+
 
 // Сменить тему на странице = темная => светлая 
 const themeToggle = document.querySelector('.ButtonNight');
-const savedTheme = localStorage.getItem('theme');
 
-    if (savedTheme === 'dark') {
-        body.classList.add('dark-theme');
-    }
+
+
 themeToggle.addEventListener('click', () => {
-    body.classList.toggle('dark-theme');
-
-        if (body.classList.contains('dark-theme')) {
-            localStorage.setItem('theme', 'dark');
-        } else {
-            localStorage.setItem('theme', 'light');
-        }
-        themeToggle.style.opacity = '0.7';
-        setTimeout(() => {
-            themeToggle.style.opacity = '1';
-        }, 100);
+    const isDark = document.documentElement.classList.toggle('dark-theme');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    themeToggle.style.opacity = '0.7';
+    setTimeout(() => {
+        themeToggle.style.opacity = '1';
+    }, 100);
 });
 
 // Загрузка локал стораге, ключ => "todos" !!
+function saveToLocalStorage() {
+    const tasks = [];
+    document.querySelectorAll('.listTodo').forEach(li => {
+        tasks.push({
+            text: li.querySelector('.SpanText').textContent,
+            completed: li.querySelector('.checkboxInput').checked
+        });
+    });
+    localStorage.setItem('todos', JSON.stringify(tasks));
+}
 
 async function loadTasks() {
+    try {
+        const response = await fetch("http://localhost:3000/todos");
+        
+        if (response.ok) {
+            const serverTodos = await response.json();
+            console.log("Загружено с сервера:", serverTodos);
+            
+            todoList.innerHTML = '';
+            
+            serverTodos.forEach(todo => {
+                const li = createTask(todo.text, false, todo.completed);
+                if (li) {
+                    todoList.appendChild(li);
+                }
+            });
+            
+            saveToLocalStorage();
+        } else {
+           
+            loadFromLocalStorage();
+        }
+    } catch (error) {
+        console.log("Сервер недоступен, загружаем из localStorage");
+        
+        loadFromLocalStorage();
+    }
+    
+    ActiveCount();
+}
+
+function loadFromLocalStorage() {
     const saved = localStorage.getItem('todos');
     if (!saved) return;
+    
     const tasks = JSON.parse(saved);
-    const  response = await fetch("http://localhost:3000/todos");
-    const data = await response.json();
-    console.log(data);
-    for (let i = 0; i < tasks.length; i++) {
-        const text = tasks[i];
-        
-        const li = document.createElement('li');
-        li.className = 'listTodo';
-
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.className = 'checkboxInput';
-        
-        const span = document.createElement('span');
-        span.textContent = text;
-        span.className = 'SpanText';
-
-        checkbox.onchange = function() {
-            if (this.checked) {
-                span.style.textDecoration = 'line-through';
-            } else {
-                span.style.textDecoration = 'none';
-            }
+    console.log("Загружено из localStorage:", tasks);
+    
+    todoList.innerHTML = '';
+    
+    tasks.forEach(task => {
+        const li = createTask(task.text, false, task.completed);
+        if (li) {
+            todoList.appendChild(li);
         }
-
-        const editButton = document.createElement('button')
-        editButton.textContent = '';
-        editButton.className = 'editButton';
-        editButton.onclick = function(event) {
-            editButton.disabled = true;
-
-            const span = li.querySelector('span');
-            const oldText = span.textContent;
-
-            const input = document.createElement('input');
-            input.value = oldText;
-            input.className = 'edit-input';
-
-            li.replaceChild(input, span);
-
-            input.onkeydown = (event) => {
-                if (event.key === 'Enter') {
-                    const newText = input.value.trim();
-                    if (newText) {
-                       
-                        let allTasks = JSON.parse(localStorage.getItem('todos')) || [];
-                        allTasks = allTasks.map(t => t === oldText ? newText : t);
-                        localStorage.setItem('todos', JSON.stringify(allTasks));
-
-                        const newSpan = document.createElement('span');
-                        newSpan.className = 'NewTodoText';
-                        newSpan.textContent = newText;
-
-                        li.replaceChild(newSpan, input);
-                        editButton.disabled = false;
-
-                        // Добавление счетчика с модалкой в дом на кнопку + (ALL TASKS) =>
-                        taskCountSpanAll.textContent = document.querySelectorAll('.listTodo').length;
-                        divCounterTaskModal.classList.add('show'); 
-                    }
-                }
-            }
-        }   
-
-        li.appendChild(checkbox);
-        li.appendChild(span);
-        li.appendChild(deleteBtn);
-        li.appendChild(editButton);
-        
-        todoList.appendChild(li);
-    } 
-   ActiveCount(); 
+    });
 }
+// async function loadTasks() {
+//     const saved = localStorage.getItem('todos');
+//     if (!saved) return;
+//     const tasks = JSON.parse(saved);
+//     const  response = await fetch("http://localhost:3000/todos");
+//     const data = await response.json();
+//     console.log(data);
+
+//     todoList.innerHTML = '';
+
+//     for (let i = 0; i < tasks.length; i++) {
+//         const text = tasks[i];
+        
+//         const li = document.createElement('li');
+//         li.className = 'listTodo';
+
+//         const checkbox = document.createElement('input');
+//         checkbox.type = 'checkbox';
+//         checkbox.className = 'checkboxInput';
+        
+//         const span = document.createElement('span');
+//         span.textContent = text;
+//         span.className = 'SpanText';
+
+//         checkbox.onchange = function() {
+//             if (this.checked) {
+//                 span.style.textDecoration = 'line-through';
+//             } else {
+//                 span.style.textDecoration = 'none';
+//             }
+//         }
+
+//         const editButton = document.createElement('button')
+//         editButton.textContent = '';
+//         editButton.className = 'editButton';
+//         editButton.onclick = function(event) {
+//             editButton.disabled = true;
+
+//             const span = li.querySelector('span');
+//             const oldText = span.textContent;
+
+//             const input = document.createElement('input');
+//             input.value = oldText;
+//             input.className = 'edit-input';
+
+//             li.replaceChild(input, span);
+
+//             input.onkeydown = (event) => {
+//                 if (event.key === 'Enter') {
+//                     const newText = input.value.trim();
+//                     if (newText) {
+                       
+//                         let allTasks = JSON.parse(localStorage.getItem('todos')) || [];
+//                         allTasks = allTasks.map(t => t === oldText ? newText : t);
+//                         localStorage.setItem('todos', JSON.stringify(allTasks));
+
+//                         const newSpan = document.createElement('span');
+//                         newSpan.className = 'NewTodoText';
+//                         newSpan.textContent = newText;
+
+//                         li.replaceChild(newSpan, input);
+//                         editButton.disabled = false;
+
+//                         // Добавление счетчика с модалкой в дом на кнопку + (ALL TASKS) =>
+//                         taskCountSpanAll.textContent = document.querySelectorAll('.listTodo').length;
+//                         divCounterTaskModal.classList.add('show'); 
+//                     }
+//                 }
+//             }
+//         }   
+
+//         li.appendChild(checkbox);
+//         li.appendChild(span);
+//         li.appendChild(deleteBtn);
+//         li.appendChild(editButton);
+        
+//         todoList.appendChild(li);
+//     } 
+//    ActiveCount(); 
+// }
 // Загрузка ДОМ ELEMENTS => functionloadTasks()
 document.addEventListener('DOMContentLoaded', loadTasks);
 
-deleteAllCheckbox.addEventListener('change', function() {
-    if (this.checked) {
-        todoList.innerHTML = '';
-        localStorage.removeItem('todos'); 
 
-    // Добавление счетчика с модалкой в дом на кнопку + (ALL TASKS) =>
-        taskCountSpanAll.textContent = 0;
-        divCounterTaskModal.classList.add('show');
-    }
-});
 
 // функция удаления сохранения массива сервера =>
-function loadTodosFromServer() {
-    fetch("http://localhost:3000/todos")
-        .then(res => res.json())
-        .then(todos => {
-            allTodosData = todos; 
-            renderTasks(allTodosData); 
-        });
-}
-
-function renderTasks(tasksArray) {
-    todoList.innerHTML = ''; 
-    tasksArray.forEach(todo => {
-        
-        const li = createTask(todo.text, false); 
-        todoList.appendChild(li);
-    });
-}
 
 function loadTodosFromServer() {
     fetch("http://localhost:3000/todos")
@@ -535,16 +652,22 @@ function loadTodosFromServer() {
         .catch(err => console.error("Ошибка загрузки:", err));
 }
 
-loadTodosFromServer();
+
+function renderTasks(tasksArray) {
+    todoList.innerHTML = ''; 
+    tasksArray.forEach(todo => {
+        
+        const li = createTask(todo.text, false); 
+        todoList.appendChild(li);
+    });
+}
+
+
+
 
 // Функция handleSave(), обрабатывает создание новой задачи: валидирует ввод, добавляет задачу в DOM и обновляет локальные счетчики.
 function handleSave() {
     const text = inputField.value.trim();
-
-    if (!text) {
-        alert('Поле не может быть пустым! Уволен!');
-        return; 
-    }
 
     const li = createTask(text, true);
     
@@ -576,15 +699,3 @@ saveBtn.onclick = (e) => {
     handleSave();
 };
 
-function loadTodosFromServer() {
-    fetch("http://localhost:3000/todos")
-        .then(res => res.json())
-        .then(todos => {
-            todoList.innerHTML = '';
-            todos.forEach(todo => {
-                const li = createTask(todo.text, false, todo.completed);
-                todoList.appendChild(li);
-            });
-            ActiveCount(); 
-        });
-}

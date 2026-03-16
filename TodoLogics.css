@@ -1,9 +1,15 @@
 /*Main styles*/
 body {
     font-family: Arial, Helvetica, sans-serif;
-    transition: 2s;
+    transition: background-color 0.5s ease; 
     background-color: var(--bg-color);
-    transition: background-color 0.3s, color 0.3;
+    color: var(--text-color, black); 
+    margin: 0;
+}
+
+:root {
+    --bg-color: #ffffff;
+    --shadow-color: rgba(0, 0, 0, 0.1);
 }
 
 /*Main content*/
@@ -116,6 +122,7 @@ body {
     background-repeat: no-repeat;
     background-position: center;
     padding: 8px 8px; 
+    cursor: pointer;
 }
 
 .ButtonNight:active::after {
@@ -136,6 +143,8 @@ body {
     margin-left: 1040px;    
     background-color: #6C63FF;
     border-radius: 30px;
+
+    cursor: pointer;
 }
 
 .modalWindow {
@@ -293,17 +302,40 @@ body {
     font-size: 20px;
     color: rgb(0, 0, 0);
     width: bold;
+
+    word-break: break-all; 
+    overflow-wrap: break-word;
+    
+   
+    display: inline-block;
+    max-width: 80%; 
+    
+    vertical-align: middle;
 }
+
+.NewTodoText {
+    word-break: break-all; 
+    overflow-wrap: break-word;
+    
+    
+    display: inline-block;
+    max-width: 80%; 
+    
+    vertical-align: middle;
+} 
+
+
 
 .deleteButton {
     width: 18px;
     height: 18px;
-    background: url(materials/trash-svgrepo-com\ 1.svg);
+    background: url("materials/trash-svgrepo-com\ 1.svg") no-repeat center/contain;
     border: none;
+    cursor: pointer;
 }
 
 .deleteButton:active {
-    background: url(materials/delte.jpg) no-repeat center/contain;
+    background: url("materials/delte.jpg") no-repeat center/contain;
     border: none;
     width: 18px;
     height: 18px;
@@ -311,7 +343,7 @@ body {
 }
 
 .deleteButton:hover {
-    background: url(materials/delte.jpg) no-repeat center/contain;
+    background: url("materials/delte.jpg") no-repeat center/contain;
     border: none;
     width: 18px;
     height: 18px;
@@ -323,6 +355,7 @@ body {
     height: 18px;
     background: url(materials/Frame\ 6.svg);
     border: none;
+    cursor: pointer;
 }
 
 .editButton:active {
@@ -346,6 +379,7 @@ body {
     background-color: #6C63FF;
     color: #6C63FF;
     border-radius: 30px;
+    cursor: pointer;
 }
 
 .checkboxInput.active {
@@ -359,6 +393,9 @@ body {
     border: 1px solid #000000;
     outline: none;
     border-radius: 5px; 
+    white-space: nowrap;         
+    overflow: hidden;
+    max-width: 540px;
 }
 
 .button-content {
@@ -499,6 +536,8 @@ body {
     border: 1px solid #6C63FF;
     border-radius: 34px;
     box-sizing: border-box;
+
+    z-index: 9999;
 }
 
 .switch input {
@@ -585,6 +624,7 @@ input:checked + .slider {
     
     flex-direction: column;
     justify-content: flex-end;
+    
     
 }
 
@@ -716,6 +756,16 @@ input:checked + .slider {
     display: none;
 }
 
+
+.error-msg {
+    color: #E53935;
+    font-size: 14px; 
+    text-align: center;
+    font-weight: bold;
+    margin-top: 5px; 
+    display: none;
+
+}
 
 
 
