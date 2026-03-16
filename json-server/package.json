@@ -1,0 +1,1 @@
+{"scripts":{"server":"nodemon --ignore db.json index.js"},"dependencies":{"cors":"^2.8.6","express":"^5.2.1","json-server":"^1.0.0-beta.13","nodemon":"^3.1.14"}}

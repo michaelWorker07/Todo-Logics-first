@@ -1,0 +1,724 @@
+/*Main styles*/
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    transition: 2s;
+    background-color: var(--bg-color);
+    transition: background-color 0.3s, color 0.3;
+}
+
+/*Main content*/
+
+.Todo-container {
+    width: 750px;
+    max-width: 100%;
+    
+    padding-left: 325px;
+    padding-right: 325px;
+    display: flex; 
+    
+    
+    gap: 16px;  
+    position: relative;
+    z-index: 1;
+}
+
+.TodoList {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 26px;
+    font-weight: bold;
+    
+    width: 500px;
+    height: 39px;
+
+    padding-left: 639px;
+    padding-right: 314px;
+    padding-bottom: 18px;
+    padding-top: 40px;
+    line-height: 100%;
+}
+
+.fieldTodo {
+    
+    background-image: url('/materials/Vector.svg');
+    background-position: right 10px center;
+    background-repeat: no-repeat;
+    background-size: 21px 21px ;
+
+    width:  595px;
+    height: fixed 38px;
+    max-width: 595px;
+
+    gap: 436px;
+
+    color: #6C63FF;
+    font-size: 16px;
+    outline: none;
+    border: 1px solid #6C63FF;
+    box-shadow: #6C63FF; 
+    transition: all 1s ease;
+
+    border-radius: 2px;
+    cursor: line;
+    padding: 11px 16px;
+    
+}
+
+.fieldLight::placeholder {
+    color: #6C63FF;
+    background-color: #6C63FF;
+}
+
+.ButtonALL {
+    background-color: #6C63FF;
+    color: #F7F7F7;
+    
+    width: auto; 
+    
+    min-width: 110px; 
+    
+    text-align: left;
+    font-weight: bold;
+    
+    background-image: url(materials/chevron-top.svg);
+    background-repeat: no-repeat;
+    background-size: 12px 8px;
+    background-position: right 10px center;
+
+    border: #6C63FF solid 1px;
+    border-radius: 5px;
+    
+    padding: 10px 30px 10px 10px; 
+    
+    position: relative;
+    cursor: pointer;
+    transition: background-image 0.2s ease; 
+}
+
+.ButtonALL.active {
+    background-image: url(materials/Vector.replace.svg); 
+    background-repeat: no-repeat;
+    background-size: 12px 8px;
+    background-position: right 10px center;
+}
+
+.ButtonALL:hover {
+    background-color: #746ef3;
+}
+
+.ButtonNight {
+    width: 44px;
+    
+    color: #F7F7F7;
+    background-color: #6C63FF;
+    border: #6C63FF 1px solid;
+    border-radius: 5px;
+    background-image: url(materials/night.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    padding: 8px 8px; 
+}
+
+.ButtonNight:active::after {
+    width: 100px;
+    height: 100px;
+}
+
+.ButtonCreate {
+    border-radius: 5px solid;
+    border: none;
+    width: 50px;
+    height: 50px;
+    background-image: url(materials/Add\ button.svg);
+    background-repeat: no-repeat;
+    background-size: 50px 50px;
+    background-position:  center 24px center;
+    margin-top: 493px;
+    margin-left: 1040px;    
+    background-color: #6C63FF;
+    border-radius: 30px;
+}
+
+.modalWindow {
+    display: none;
+    border: 1px solid white;
+    border-radius: 16px;
+    width: 500px;
+    height: 289px;
+
+    position: fixed;   
+    top: 295px;
+    left: 710px; 
+    transform: translate(-50%, -50%); 
+    padding: 10px 10px;
+    
+    margin: 0; 
+    background-color: white;
+    z-index: 1000; 
+
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);    
+}
+
+.modalWindow.active {
+    display: block;
+}
+
+.parentTodo {
+   
+    top: 493px;   
+    left: 0;
+}
+
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999; 
+}
+
+.overlay.active {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+}
+
+.closeBtn {
+    width: 110px;
+    height: 38px;
+    margin-top: 20px;
+    padding: 8px 16px;
+    font-weight: bold;
+
+    background-color: #ffffff;
+    color: #6C63FF;
+
+    border: 1px solid #6C63FF;
+    border-radius: 5px;
+    cursor: pointer;
+    
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 10000;
+}
+
+.closeBtn:hover {
+    border-color: #443be6;
+    box-shadow: #6C63FF;
+}
+
+.NewNote {
+    text-align: center;
+    padding-bottom: 25px;
+}
+
+.inputNew {
+    width: 440px;
+    height: 38px;
+
+    border-radius: 5px;
+    border: 1px solid #6C63FF;
+    text-align: left;
+    align-items: center;
+    padding-left: 30px;
+    padding-right: 30px;
+    color: #8f8e9c;
+}
+
+.inputNew:focus {
+    outline: 1px solid #6C63FF;
+    border-color: #6C63FF;
+}
+
+.saveBtn {
+    font-weight: bold;
+    width: 97px;
+    height: 38px;
+
+    margin-top: 20px;
+    padding: 8px 16px;
+    background-color: #6C63FF;
+    color: rgb(255, 255, 255);
+    border: 1px solid #6C63FF;
+    border-radius: 5px;
+    cursor: pointer;
+
+    position: fixed;
+    bottom: 20px; 
+    right: 20px;   
+    z-index: 1000;
+
+    text-align: center;
+}
+
+.saveBtn:hover {
+    border-color: #4f47eb;
+    box-shadow: #7f7aeb;
+}
+
+.TodoAll {
+    max-width: 945px;
+    display: flex;
+    justify-content: right;  
+    width: 100%;
+    margin: 20px 0;
+    position: relative;
+    gap: 10px;
+}
+
+.Todo-List {
+   width: 520px;
+   max-width: 100%;
+   list-style: none;
+   padding: 0;
+   margin-top: 30;
+}
+
+.listTodo {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px;
+    border-bottom: 1px solid #6C63FF;
+    font-weight: bold;
+ 
+}
+
+.SpanText {
+    font-size: 20px;
+    color: rgb(0, 0, 0);
+    width: bold;
+}
+
+.deleteButton {
+    width: 18px;
+    height: 18px;
+    background: url(/materials/trash-svgrepo-com\ 1.svg);
+    border: none;
+}
+
+.deleteButton:active {
+    background: url(materials/delte.jpg) no-repeat center/contain;
+    border: none;
+    width: 18px;
+    height: 18px;
+    filter: brightness(100%);
+}
+
+.deleteButton:hover {
+    background: url(materials/delte.jpg) no-repeat center/contain;
+    border: none;
+    width: 18px;
+    height: 18px;
+    filter: brightness(100%);
+}
+
+.editButton {
+    width: 18px;
+    height: 18px;
+    background: url(materials/Frame\ 6.svg);
+    border: none;
+}
+
+.editButton:active {
+    background: url('materials/cursor.jpg') no-repeat center/contain;
+    border: none;
+    width: 18px;
+    height: 18px;
+    filter: brightness(1.2) 
+}
+
+.editButton:hover {
+    background: url('materials/cursor.jpg') no-repeat center/contain;
+    border: none;
+    width: 18px;
+    height: 18px;
+}
+
+.checkboxInput {
+    width: 26px;
+    height: 26px;
+    background-color: #6C63FF;
+    color: #6C63FF;
+    border-radius: 30px;
+}
+
+.checkboxInput.active {
+    background-color: #6C63FF;
+    color: #6C63FF;
+}
+
+.edit-input {
+    padding: 10px 10px;
+    width: 350px;
+    border: 1px solid #000000;
+    outline: none;
+    border-radius: 5px; 
+}
+
+.button-content {
+    min-width: 110px;
+    height: 84px fixed;
+    background: white;
+    border-radius: 5px;
+    
+    border: 1px solid #6C63FF;
+    overflow: hidden;
+    
+    margin: 0;
+    gap: 4px;
+    
+    display: flex;
+    flex-direction: column; 
+}
+
+.button-content button {
+    width: 100%;
+    transition: 0.2s ease;
+    border: none;
+    background: white;
+    cursor: pointer;
+    text-align: left;
+    padding-left: 5px;
+    
+    font-size: 14px;
+    height: auto; 
+}
+
+.button-content button:hover {
+    background-color: rgba(0, 0, 0, 0.1); 
+}
+
+.modal-buttons {
+    display: none;
+    position: absolute;
+    top: 42px;
+    left: 840px; 
+
+    width: 94px;
+    height: 84px;
+    
+    z-index: 1000;
+    border-radius: 5px;
+    border-color: black;
+
+}
+
+.modal-buttons.active {
+    display: block;
+}
+
+.ButtonsAllTasks {
+    width: 19px;
+    height: 16px;
+    font-size: 14px;
+    color: #6C63FF;
+    padding: 0;
+    margin: 0;
+}
+
+.ButtonComplete {
+    width: 70px;
+    height: 16px;
+    font-size: 16px;
+    color: #6C63FF;
+    padding: 0;
+    margin: 0;
+    
+}
+
+.ButtonIncomplete {
+    width: 81px;
+    height: 16px;
+    font-size: 16px;
+    color: #6C63FF;
+    padding: 0;
+    margin: 0;
+    
+}
+
+.ButtonComplete:hover {
+    background-color: #000000;
+}
+
+.light-theme {
+    --bg-color: #ffffff;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+.dark-theme{
+    --bg-color: #1a1a1a;
+    --shadow-color: rgba(255, 255, 255, 0.1); 
+}
+
+.dark-theme .SpanText {
+    color: white;
+
+}
+
+.dark-theme .modalWindow.active {
+    background-color: #252525;
+    border: 1px solid #F7F7F7;
+}
+
+.dark-theme .NewNote {
+    color: #F7F7F7;
+}
+
+.dark-theme .inputNew {
+    border: 1px solid #F7F7F7;
+}
+
+.dark-theme .closeBtn{
+    background-color: #252525;
+
+}
+
+.dark-theme .TodoList {
+    color: #F7F7F7;
+}
+
+.dark-theme .NewTodoText {
+    color: white;
+}
+
+.dark-theme .fieldTodo {
+    border: 1px solid #F7F7F7;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 70px;
+    
+    border: 1px solid #6C63FF;
+    border-radius: 34px;
+    box-sizing: border-box;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; 
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+
+    display: flex;
+    align-items: center;
+    padding: 0 4px;
+    box-sizing: border-box;
+}
+
+@keyframes shake  {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% {transform: translateX(0); }
+}
+
+.slider.shake {
+    animation: shake 0.3s ease-in-out;
+    animation-iteration-count: 1;
+}
+
+.slider::before {
+    position: center ;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px; 
+}
+
+input:checked + .slider::before {
+     transform: translateX(20px);
+     padding: auto;  
+}
+
+input:checked + .slider {
+    background-color: #6C63FF;
+}
+
+.divCounterTaskModal {
+    width: 400px;
+    
+    height: 75px;
+    position: fixed;
+    top: -100px; 
+    left: 230px;
+    transform: translateX(-50%);
+    background: #333;
+    color: rgb(255, 255, 255);
+    
+    padding: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-radius: 8px;
+    transition: top 2s ease; 
+    border: 1px solid #6C63FF;
+    background-color: #746ef3;
+
+    
+    flex-direction: column;
+    justify-content: flex-end;
+    
+}
+
+.divCounterTaskModal.show {
+    top: 20px;
+}
+
+.counterPh {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    padding-bottom: 10px;
+    line-height: 1;
+    height: 20px;
+    
+    width: 100%;
+    transform: translateX(1%);
+    
+    align-items: flex-start;
+
+    display: flex; 
+    justify-content: space-between; 
+    font-size: 15px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    color: #ffffff;  
+}
+
+.counterPh::after {
+    
+    content: '';
+    position: absolute;
+    bottom: 13px;
+    left: 5px;
+    right: 5px;
+    height: 1px;
+    border-bottom: dashed 1px white;
+    transform: translateX(-1%);
+}
+
+
+.counterPh span {
+    transform: translateY(2px);
+    line-height: 1;
+    display: inline-block; 
+}
+
+.taskCountSpanAll {
+    white-space: nowrap;
+    padding-right: 10px;
+}
+
+.taskCountSpanActive {
+    white-space: nowrap;
+    padding-right: 10px;
+}
+
+.taskCountSpanCompleted {
+    white-space: nowrap;
+    padding-right: 10px;
+}
+
+.RemoveTask_DeleteNow {
+    font-family: Arial, Helvetica, sans-serif;
+    width: 140px;
+    height: 38px;
+    border: 2px solid #6C63FF;
+    border-radius: 4px;
+
+    right: 0;
+
+    margin-top: 1px;
+    margin-left: 1040px;  
+    
+    font-size: 16px;
+    color: #F7F7F7;
+    
+    background-color: #6C63FF;
+    background-image: url(materials/UndoDeleteVector.svg);
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 15px 14px;
+
+    padding: 0 12px;
+    box-sizing: border-box;
+    
+    cursor: line;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; 
+    gap: 10px;
+}
+
+.RemoveTask_DeleteNow:hover {
+    transition: 0.9s;
+    background-color: #534CC2;
+    border-color: #534CC2;
+    cursor: pointer;
+}
+
+.RemoveTask_DeleteNow svg {
+    width: 24px;
+    height: 24px;
+    display: block;
+    flex-shrink: 0;
+    order: -1;
+}
+
+.RemoveTask_DeleteNow .count {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.RemoveTask_DeleteNow .btn-text {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.hidden {
+    display: none ;
+}
+
+.NoresultsSvg {
+    width: 221px;
+    height: 174px;
+    margin-left: 600px;
+    display: none;
+}
+
+
+
+
+
+
+
